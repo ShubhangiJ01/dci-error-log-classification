@@ -7,15 +7,16 @@ from dciclient.v1.api import file as dci_file
 from dciclient.v1.api import product as dci_product
 from dciclient.v1.api import jobstate as dci_jobstate
 from datetime import datetime
-from sort import sort_by_created_at
-from jobstates import get_first_jobstate_failure, get_jobstate_before_failure
-from csv_manipulations import (
+from api.sort import sort_by_created_at
+from api.jobstates import get_first_jobstate_failure, get_jobstate_before_failure
+from api.csv_manipulations import (
     remove_current_csv,
     create_csv_file_with_headers,
     append_job_to_csv,
 )
-from file_is_in_files import check_if_file_is_in_files
+from api.file_is_in_files import check_if_file_is_in_files
 
+#sys.path.append('../')
 
 context = build_dci_context()
 
@@ -153,7 +154,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020:
+        if created_at.year < 2020 or created_at.month < 7 or created_at.day < 14 :
             continue
 
         if (

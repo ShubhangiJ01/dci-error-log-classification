@@ -3,7 +3,7 @@ import argparse
 import sys
 import logging
 import traceback
-
+import os
 from error_classification_rhel import data_load
 from error_classification_rhel import feature_generation
 from error_classification_rhel import classifier_rules
@@ -42,11 +42,15 @@ def main():
             sys.exit(1)
 
         try:
-            logging.info('Writing labeled data in a csv file')
+            logging.info('Writing labeled data in a json file')
             classification_storage(classified_data)
         except Exception:
             LOG.error(traceback.format_exc())
             sys.exit(1)
+    else:
+        LOG.error(traceback.format_exc())
+        sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,4 @@
-from sort import sort_by_created_at
+from api.sort import sort_by_created_at
 
 
 def get_first_jobstate_failure(jobstates):
