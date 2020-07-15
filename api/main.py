@@ -1,5 +1,6 @@
 import json
 import os.path
+import time
 from dciclient.v1.api.context import build_dci_context
 from dciclient.v1.api import job as dci_job
 from dciclient.v1.api import file as dci_file
@@ -44,8 +45,6 @@ def get_failed_jobs_for_product(product_id):
     offset = 0
     limit = 100
     jobs = []
-    print(num_of_jobs)
-    raise
     while offset < num_of_jobs:
         jobs_list = dci_job.list(
             context,
@@ -133,8 +132,9 @@ def get_values(job):
     return values
 
 
-if __name__ == "__main__":
-    csv_file_name = "./jobs_7_6_2020_red_hat4.csv"
+def api_main(file_path):
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    csv_file_name = file_path + "jobs_" + timestr + ".csv"
     if os.path.exists(csv_file_name):
         remove_current_csv(csv_file_name)
     headers = [
@@ -174,3 +174,9 @@ if __name__ == "__main__":
         job = enhance_job(job, first_jobstate_failure, files)
         job_values = get_values(job)
         append_job_to_csv(csv_file_name, job_values)
+    
+    return csv_file_name
+
+
+if __name__ == "__main__":
+    api_main()
