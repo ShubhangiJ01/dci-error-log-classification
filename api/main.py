@@ -44,8 +44,6 @@ def get_failed_jobs_for_product(product_id):
     offset = 0
     limit = 100
     jobs = []
-    print(num_of_jobs)
-    raise
     while offset < num_of_jobs:
         jobs_list = dci_job.list(
             context,
