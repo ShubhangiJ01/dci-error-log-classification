@@ -112,6 +112,7 @@ def enhance_job(job, first_jobstate_failure, files):
 def get_values(job):
     values = []
     values.append("https://www.distributed-ci.io/jobs/" + job["id"])
+    values.append(job["id"])
     values.append(job["content"])
     values.append(job["stage_of_failure"])
     if job["is_user_text"]:
@@ -139,9 +140,10 @@ def api_main(file_path):
     if os.path.exists(csv_file_name):
         remove_current_csv(csv_file_name)
     headers = [
-        "Job ID",
-        "Error Message",
-        "Stage of Failure",
+        "Job_link",
+        "Job_ID",
+        "Error_Message",
+        "Stage_of_Failure",
         "Is_user_text.yml",
         "Is_SUT.yml",
         "Is_install.yml",
@@ -154,7 +156,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020 or created_at.month < 7 or created_at.day < 14 :
+        if created_at.year < 2020 or created_at.month < 7 or created_at.day < 15 :
             continue
 
         if (

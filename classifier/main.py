@@ -7,11 +7,10 @@ import os
 from error_classification_rhel import data_load
 from error_classification_rhel import feature_generation
 from error_classification_rhel import classifier_rules
-from error_classification_rhel import classification_storage
+from json_generator import classification_storage
 
 
 LOG = logging.getLogger(__name__)
-#LOG.setLevel(logging.DEBUG)
 logging.getLogger().setLevel(logging.INFO)
 
 def main():
