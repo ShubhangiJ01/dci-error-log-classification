@@ -156,7 +156,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020 or created_at.month < 7 or created_at.day < 15 :
+        if created_at.year < 2020 or created_at.month < 7 or created_at.day < 20 :
             continue
 
         if (

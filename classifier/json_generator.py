@@ -1,4 +1,4 @@
-import global_variable
+import settings
 import json
 
 
@@ -12,7 +12,7 @@ def classification_storage(data):
         new_key = data_id[key]
         del data_dic[key]
         data_dic[new_key] = temp
-        
-    upload_file_name = global_variable.upload_dir_name + "Label_Rhel_" + global_variable.timestr + ".json"
+
+    upload_file_name = settings.UPLOAD_DIR_NAME + "Label_Rhel_" + settings.timestr + ".json"
     with open(upload_file_name, 'w') as fp:
         json.dump(data_dic, fp)

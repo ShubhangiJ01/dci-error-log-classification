@@ -5,19 +5,19 @@ from spacy.lang.en import English
 from spacy.matcher import PhraseMatcher
 import spacy
 import en_core_web_sm
-import global_variable
+#import settings
 import sys
 sys.path.append('../')
 from api.main import api_main
-
+import classifier.settings as settings
 
 pd.set_option('mode.chained_assignment', None)
 nlp = spacy.load("en_core_web_sm")
 
 def data_load():
-  file_name = api_main(global_variable.download_dir_name)
+  file_name = api_main(settings.DOWNLOAD_DIR_NAME)
   data = pd.read_csv(file_name)
-  #data = pd.read_csv('/home/shujain/Downloads/jobs_7_6_2020_red_hat4.csv')
+  data = pd.read_csv('/home/shujain/Downloads/jobs_20200720-164946.csv')
   return data
 
 def feature_generation(data):
@@ -46,17 +46,14 @@ def classifier_rules(data):
       if (len(matches) > 0):
         data['SUT_beaker_server'][row] = 1
         data['Error_Type'][row] = "non DCI"
-        
+      else:
+        matcher.add("undefined_variable", None, nlp("undefined variable"))
+        doc = nlp(data['Error_Message'][row])
+        matches = matcher(doc)
+        if (len(matches) > 0):
+          data['SUT_undefined'][row] = 1
+          data['Error_Type'][row] = "non DCI"
 
-    elif(data['Is_SUT.yml'][row]==1):
-      matcher.add("undefined_variable", None, nlp("undefined variable"))
-      doc = nlp(data['Error_Message'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['SUT_undefined'][row] = 1
-        data['Error_Type'][row] = "non DCI"
-        
-    
     elif(data['Stage_of_Failure'][row] in ('Gathering Facts','Wait system to be installed')):
       matcher.add("gathering_facts", None, nlp("/distribution/check-install"))
       data['Error_Message'][row] = data['Error_Message'][row].replace('u\'', '').replace('\'', '')
