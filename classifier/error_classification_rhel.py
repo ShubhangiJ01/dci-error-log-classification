@@ -15,9 +15,9 @@ pd.set_option('mode.chained_assignment', None)
 nlp = spacy.load("en_core_web_sm")
 
 def data_load():
-  file_name = api_main(settings.DOWNLOAD_DIR_NAME)
-  data = pd.read_csv(file_name)
-  data = pd.read_csv('/home/shujain/Downloads/jobs_20200720-164946.csv')
+  # file_name = api_main(settings.DOWNLOAD_DIR_NAME)
+  # data = pd.read_csv(file_name)
+  data = pd.read_csv('/home/shujain/Downloads/jobs_20200721-104802.csv')
   return data
 
 def feature_generation(data):
@@ -38,23 +38,23 @@ def classifier_rules(data):
     if(data.loc[row,'Stage_of_Failure'] == 'Run the pre-run hook'):
       data['Pre_Run_hook'][row] = 1
       data['Error_Type'][row] = "non DCI"
+      continue
 
-    elif(data['Is_SUT.yml'][row]==1):
+    if(data['Is_user_text.yml'][row] ==1) :
+      data['Error_Type'][row] = "non DCI"
+      continue
+      
+    if(data['Is_SUT.yml'][row]==1):
       matcher.add("beaker server", None, nlp("'ansible_host': u'beaker_server'"))
+      matcher.add("undefined_variable", None, nlp("undefined variable"))
       doc = nlp(data['Error_Message'][row])
       matches = matcher(doc)
       if (len(matches) > 0):
         data['SUT_beaker_server'][row] = 1
         data['Error_Type'][row] = "non DCI"
-      else:
-        matcher.add("undefined_variable", None, nlp("undefined variable"))
-        doc = nlp(data['Error_Message'][row])
-        matches = matcher(doc)
-        if (len(matches) > 0):
-          data['SUT_undefined'][row] = 1
-          data['Error_Type'][row] = "non DCI"
+        continue
 
-    elif(data['Stage_of_Failure'][row] in ('Gathering Facts','Wait system to be installed')):
+    if(data['Stage_of_Failure'][row] in ('Gathering Facts','Wait system to be installed')):
       matcher.add("gathering_facts", None, nlp("/distribution/check-install"))
       data['Error_Message'][row] = data['Error_Message'][row].replace('u\'', '').replace('\'', '')
       doc = nlp(data['Error_Message'][row])
@@ -62,24 +62,27 @@ def classifier_rules(data):
       if (len(matches) > 0):
         data['Installation_failure'][row] = 1
         data['Error_Type'][row] = "DCI"
-        
-    elif(data['Stage_of_Failure'][row] =='Get SUT details'):
+        continue
+
+    if(data['Stage_of_Failure'][row] =='Get SUT details'):
       matcher.add("SUT_HTTP_Error", None, nlp("HTTP error"))
       doc = nlp(data['Error_Message'][row])
       matches = matcher(doc)
       if (len(matches) > 0):
         data['SUT_HTTP_Error'][row] = 1
         data['Error_Type'][row] = "non DCI"
-        
-    elif(data['Is_logs.yml'][row] ==1):
+        continue
+
+    if(data['Is_logs.yml'][row] ==1) :
       matcher.add("logs_parsing_error", None, nlp("An error while parsing the output occured"))
       doc = nlp(data['Error_Message'][row])
       matches = matcher(doc)
       if (len(matches) > 0):
         data['logs_parsing_error'][row] = 1
         data['Error_Type'][row] = "non DCI"
-        
-    elif(data['Is_install.yml'][row] ==1):
+        continue
+
+    if(data['Is_install.yml'][row] ==1):
       matcher.add("install_no_distro_match", None, nlp("distro tree matches"))
       data['Error_Type'][row] = "DCI"
       doc = nlp(data['Error_Message'][row])
@@ -87,7 +90,8 @@ def classifier_rules(data):
       if (len(matches) > 0):
         data['install_no_distro_match'][row] = 1
         data['Error_Type'][row] = "DCI"
-        
+        continue
+
     else:
       matcher.add("dci_rhel_cki_failure_step", None, nlp("dci-rhel-cki"))
       doc = nlp(data['Stage_of_Failure'][row])
