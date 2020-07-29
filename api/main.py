@@ -1,6 +1,7 @@
 import json
-import os.path
-import time
+import logging
+import traceback
+import pandas as pd
 from dciclient.v1.api.context import build_dci_context
 from dciclient.v1.api import job as dci_job
 from dciclient.v1.api import file as dci_file
@@ -13,12 +14,26 @@ from api.csv_manipulations import (
     remove_current_csv,
     create_csv_file_with_headers,
     append_job_to_csv,
+    create_csv_file_name
 )
 from api.file_is_in_files import check_if_file_is_in_files
 
 #sys.path.append('../')
 
 context = build_dci_context()
+LOG = logging.getLogger(__name__)
+logging.getLogger().setLevel(logging.INFO)
+
+headers = [
+    "Job_link",
+    "Job_ID",
+    "Error_Message",
+    "Stage_of_Failure",
+    "Is_user_text.yml",
+    "Is_SUT.yml",
+    "Is_install.yml",
+    "Is_logs.yml",
+]
 
 
 def get_product_id_by_name(product_name):
@@ -133,22 +148,33 @@ def get_values(job):
         values.append("0")
     return values
 
+def test_data(job_id):
+    csv_file_name = create_csv_file_name()
+    create_csv_file_with_headers(csv_file_name, headers)
+    product_id = get_product_id_by_name("RHEL")
+    jobs = get_failed_jobs_for_product(product_id)
+    flag = False
+
+    for job in jobs:
+        if job['id'] == job_id:
+            first_jobstate_failure = get_first_jobstate_failure(job["jobstates"])
+            first_jobstate_failure_id = first_jobstate_failure["id"]
+            files = get_files_for_jobstate(first_jobstate_failure_id)
+            job = enhance_job(job, first_jobstate_failure, files)
+            job_values = get_values(job)
+            append_job_to_csv(csv_file_name, job_values)
+            flag = True
+            break
+
+    if(flag == False):
+        LOG.error(traceback.format_exc())
+        sys.exit(1)
+    
+    data = pd.read_csv(csv_file_name)
+    return data
 
 def api_main(file_path):
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    csv_file_name = file_path + "jobs_" + timestr + ".csv"
-    if os.path.exists(csv_file_name):
-        remove_current_csv(csv_file_name)
-    headers = [
-        "Job_link",
-        "Job_ID",
-        "Error_Message",
-        "Stage_of_Failure",
-        "Is_user_text.yml",
-        "Is_SUT.yml",
-        "Is_install.yml",
-        "Is_logs.yml",
-    ]
+    csv_file_name = create_csv_file_name()
     create_csv_file_with_headers(csv_file_name, headers)
 
     product_id = get_product_id_by_name("RHEL")
