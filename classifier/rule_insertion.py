@@ -13,10 +13,10 @@ def database_insertion(Stage_of_failure,Col_val,Error_Message,Error_Type):
     client = Elasticsearch("http://localhost:9200")
 
     rule={
-        "Stage_of_failure": sys.argv[1],
-        "Column_Val = 1": sys.argv[2],
-        "Error_Message": sys.argv[3],
-        "Error_Type": sys.argv[4]
+        "Stage_of_failure": Stage_of_failure,
+        "Column_Val = 1": Col_val,
+        "Error_Message": Error_Message,
+        "Error_Type": Error_Type
     }
 
     INDEX_NAME = "rule_classification"
