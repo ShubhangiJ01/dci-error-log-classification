@@ -1,6 +1,7 @@
 import json
 import logging
 import traceback
+import sys
 import pandas as pd
 from dciclient.v1.api.context import build_dci_context
 from dciclient.v1.api import job as dci_job
@@ -33,6 +34,7 @@ headers = [
     "Is_SUT.yml",
     "Is_install.yml",
     "Is_logs.yml",
+    "Is_dci-rhel-cki",
 ]
 
 
@@ -121,6 +123,12 @@ def enhance_job(job, first_jobstate_failure, files):
     job["is_logs"] = check_if_file_is_in_files(
         files_for_jobstate_before_failure, "include_tasks: logs.yml"
     )
+
+    if "dci-rhel-cki" in files_sorted[0]["name"]:
+        job["is_dci-rhel-cki"] = True
+    else:
+        job["is_dci-rhel-cki"] = False
+
     return job
 
 
@@ -146,32 +154,33 @@ def get_values(job):
         values.append("1")
     else:
         values.append("0")
+    if job["is_dci-rhel-cki"]:
+        values.append("1")
+    else:
+        values.append("0")
     return values
 
 def test_data(job_id):
     csv_file_name = create_csv_file_name()
     create_csv_file_with_headers(csv_file_name, headers)
-    product_id = get_product_id_by_name("RHEL")
-    jobs = get_failed_jobs_for_product(product_id)
-    flag = False
-
-    for job in jobs:
-        if job['id'] == job_id:
-            first_jobstate_failure = get_first_jobstate_failure(job["jobstates"])
-            first_jobstate_failure_id = first_jobstate_failure["id"]
-            files = get_files_for_jobstate(first_jobstate_failure_id)
-            job = enhance_job(job, first_jobstate_failure, files)
-            job_values = get_values(job)
-            append_job_to_csv(csv_file_name, job_values)
-            flag = True
-            break
-
-    if(flag == False):
-        LOG.error(traceback.format_exc())
+    try:
+        r = dci_job.get(
+            context, id=job_id, limit=1, offset=0, embed="remoteci,jobstates"
+        )
+        job = r.json()["job"]
+        first_jobstate_failure = get_first_jobstate_failure(job["jobstates"])
+        first_jobstate_failure_id = first_jobstate_failure["id"]
+        files = get_files_for_jobstate(first_jobstate_failure_id)
+        job = enhance_job(job, first_jobstate_failure, files)
+        job_values = get_values(job)
+        append_job_to_csv(csv_file_name, job_values)
+    except Exception:
+        # LOG.error(traceback.format_exc())
         sys.exit(1)
-    
+
     data = pd.read_csv(csv_file_name)
     return data
+
 
 def api_main(file_path):
     csv_file_name = create_csv_file_name()
