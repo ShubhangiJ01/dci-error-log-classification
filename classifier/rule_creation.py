@@ -18,8 +18,7 @@ LOG = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.INFO)
 
 def create_new_rule(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_message,Job_ID):
-    #data = test_data(Job_ID)
-    data = pd.read_csv('jobs_20200729-131646.csv')
+    data = test_data(Job_ID)
     matcher = PhraseMatcher(nlp.vocab)
     
     if((Is_user_text==data.loc[0,'Is_user_text.yml']) and (Is_SUT== data.loc[0,'Is_SUT.yml']) and (Is_install== data.loc[0,'Is_install.yml']) and (Is_logs==data.loc[0,'Is_logs.yml']) and (Is_install== data.loc[0,'Is_install.yml']) and (Is_dci_rhel_cki== data.loc[0,'Is_dci_rhel_cki'])):

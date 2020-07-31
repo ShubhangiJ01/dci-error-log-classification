@@ -25,7 +25,6 @@ def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,I
 
     INDEX_NAME = "rule_classification"
     client.index(index=INDEX_NAME,body=rule)
-    #client.indices.delete(index=INDEX_NAME)
     client.indices.refresh(index=INDEX_NAME)
 
     index_exists = client.indices.exists(index=INDEX_NAME)
