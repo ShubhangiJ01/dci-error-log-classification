@@ -18,9 +18,8 @@ client = Elasticsearch("http://localhost:9200")
 INDEX_NAME = "rule_classification"
 
 def data_load():
-  # file_name = api_main(settings.DOWNLOAD_DIR_NAME)
-  # data = pd.read_csv(file_name)
-  data = pd.read_csv('jobs_20200729-131646.csv')
+  file_name = api_main(settings.DOWNLOAD_DIR_NAME)
+  data = pd.read_csv(file_name)
   return data
 
 def classifier_rules(data):
