@@ -25,6 +25,7 @@ def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,I
 
     INDEX_NAME = "rule_classification"
     client.index(index=INDEX_NAME,body=rule)
+    #client.indices.delete(index=INDEX_NAME)
     client.indices.refresh(index=INDEX_NAME)
 
     index_exists = client.indices.exists(index=INDEX_NAME)
@@ -73,8 +74,12 @@ def main():
     except Exception:
         LOG.error(traceback.format_exc())
         sys.exit(1)
-    logging.info('Entering database insertion')
-    database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
+    try:
+        logging.info('Entering database insertion')
+        database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
+    except Exception:
+        LOG.error(traceback.format_exc())
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
