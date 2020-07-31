@@ -4,4 +4,4 @@ dciclient=1.0.4
 ntlk=3.5
 pandas=1.0.5
 spacy=2.3.2
-
+elasticsearch >= 7.0.0
