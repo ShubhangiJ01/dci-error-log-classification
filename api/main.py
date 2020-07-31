@@ -34,7 +34,7 @@ headers = [
     "Is_SUT.yml",
     "Is_install.yml",
     "Is_logs.yml",
-    "Is_dci-rhel-cki",
+    "Is_dci_rhel_cki",
 ]
 
 
@@ -125,9 +125,9 @@ def enhance_job(job, first_jobstate_failure, files):
     )
 
     if "dci-rhel-cki" in files_sorted[0]["name"]:
-        job["is_dci-rhel-cki"] = True
+        job["is_dci_rhel_cki"] = True
     else:
-        job["is_dci-rhel-cki"] = False
+        job["is_dci_rhel_cki"] = False
 
     return job
 
@@ -154,7 +154,7 @@ def get_values(job):
         values.append("1")
     else:
         values.append("0")
-    if job["is_dci-rhel-cki"]:
+    if job["is_dci_rhel_cki"]:
         values.append("1")
     else:
         values.append("0")
