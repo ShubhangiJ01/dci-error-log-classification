@@ -32,12 +32,8 @@ def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,I
     else:
         try:
             response = settings.client.search(index=settings.INDEX_NAME)
-            for hit in response['hits']['hits']:
-                print(hit["_source"])
-
         except Exception as err:
             print ("search(index) ERROR", err)
-            response = {"error": err}
         
 def main(args):
     
@@ -59,7 +55,6 @@ def main(args):
         sys.exit(1)
     try:
         logging.info('Entering database insertion')
-        print(Stage_of_Failure)
         database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
     except Exception:
         LOG.error(traceback.format_exc())

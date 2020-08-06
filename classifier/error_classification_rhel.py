@@ -28,7 +28,7 @@ def classifier_rules(data):
   index_exists = settings.client.indices.exists(index=settings.INDEX_NAME)
   
   if index_exists == False:
-    LOG.exception("No rule to match: Database is empty")
+    LOG.exception("No rule to match: Database not found")
     sys.exit(1)
   else:
     try:
@@ -58,7 +58,7 @@ def classifier_rules(data):
               add_clasification(data.loc[job,'Job_ID'], {"error_type":data.loc[job,'Error_Type']})
               break
       else:
-          LOG.error(traceback.format_exc())
+          LOG.exception("No rule to match: Database is empty")
           sys.exit(1)
     except Exception as err:
       LOG.error(traceback.format_exc())
