@@ -35,6 +35,7 @@ headers = [
     "Is_install.yml",
     "Is_logs.yml",
     "Is_dci-rhel-cki",
+    "Error_Type"
 ]
 
 
@@ -129,6 +130,7 @@ def enhance_job(job, first_jobstate_failure, files):
     else:
         job["is_dci-rhel-cki"] = False
 
+    job["error_type"] = job["analytics"][0]["data"]["error_type"]
     return job
 
 
@@ -158,6 +160,8 @@ def get_values(job):
         values.append("1")
     else:
         values.append("0")
+    
+    values.append(job["error_type"])
     return values
 
 def test_data(job_id):
@@ -182,6 +186,17 @@ def test_data(job_id):
     return data
 
 
+def add_clasification(job_id, result):
+    r = dci_analytics.create(
+        context,
+        job_id=job_id,
+        name="",
+        type="",
+        url="http://example.com",
+        data=result,
+    )
+
+
 def api_main(file_path):
     csv_file_name = create_csv_file_name()
     create_csv_file_with_headers(csv_file_name, headers)
@@ -202,7 +217,8 @@ def api_main(file_path):
             or job["remoteci"]["name"] == "pctt-thomas-1"
         ):
             continue
-
+        
+        add_clasification(job["id"], {"error_type": "DCI"})
         first_jobstate_failure = get_first_jobstate_failure(job["jobstates"])
         first_jobstate_failure_id = first_jobstate_failure["id"]
         files = get_files_for_jobstate(first_jobstate_failure_id)
