@@ -3,6 +3,7 @@ import logging
 import traceback
 import sys
 import pandas as pd
+from dciclient.v1.api import analytic as dci_analytics
 from dciclient.v1.api.context import build_dci_context
 from dciclient.v1.api import job as dci_job
 from dciclient.v1.api import file as dci_file
@@ -35,6 +36,7 @@ headers = [
     "Is_install.yml",
     "Is_logs.yml",
     "Is_dci_rhel_cki",
+    "Error_Type"
 ]
 
 
@@ -89,7 +91,6 @@ def change_content_to_wait_system_to_be_installed(job, files_for_jobstate_before
             return job["content"]
     return None
 
-
 def enhance_job(job, first_jobstate_failure, files):
     files_sorted = sort_by_created_at(files)
     first_file = files_sorted[0]
@@ -129,6 +130,11 @@ def enhance_job(job, first_jobstate_failure, files):
     else:
         job["is_dci_rhel_cki"] = False
 
+    try:
+        job["error_type"] = job["analytics"][0]["data"]["error_type"]
+    except KeyError:
+        job["error_type"] = "None"
+
     return job
 
 
@@ -158,6 +164,8 @@ def get_values(job):
         values.append("1")
     else:
         values.append("0")
+    
+    values.append(job["error_type"])
     return values
 
 def test_data(job_id):
@@ -182,6 +190,18 @@ def test_data(job_id):
     return data
 
 
+def add_clasification(job_id, result):
+    print("Updating Label after ML engine run")
+    r = dci_analytics.create(
+        context,
+        job_id=job_id,
+        name="",
+        type="",
+        url="http://example.com",
+        data=result,
+    )
+    
+
 def api_main(file_path):
     csv_file_name = create_csv_file_name()
     create_csv_file_with_headers(csv_file_name, headers)
@@ -191,7 +211,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020 or created_at.month < 7 or created_at.day < 20 :
+        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 6 :
             continue
 
         if (
