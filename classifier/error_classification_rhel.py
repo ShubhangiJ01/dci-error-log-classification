@@ -5,100 +5,63 @@ from spacy.lang.en import English
 from spacy.matcher import PhraseMatcher
 import spacy
 import en_core_web_sm
-#import settings
+from elasticsearch import Elasticsearch
 import sys
+import logging
+import traceback
 sys.path.append('../')
 from api.main import api_main
+from api.main import add_clasification
 import classifier.settings as settings
+
 
 pd.set_option('mode.chained_assignment', None)
 nlp = spacy.load("en_core_web_sm")
+LOG = logging.getLogger(__name__)
 
 def data_load():
-  # file_name = api_main(settings.DOWNLOAD_DIR_NAME)
-  # data = pd.read_csv(file_name)
-  data = pd.read_csv('/home/shujain/Downloads/jobs_20200721-104802.csv')
-  return data
-
-def feature_generation(data):
-  data.insert(len(data.columns),"Pre_Run_hook",0)
-  data.insert(len(data.columns),"SUT_beaker_server",0)
-  data.insert(len(data.columns),"SUT_undefined",0)
-  data.insert(len(data.columns),"dci_rhel_cki_failure_step",0)
-  data.insert(len(data.columns),"Installation_failure",0)
-  data.insert(len(data.columns),"SUT_HTTP_Error",0)
-  data.insert(len(data.columns),"logs_parsing_error",0)
-  data.insert(len(data.columns),"install_no_distro_match",0)
-  data.insert(len(data.columns),"Error_Type","None")
+  file_name = api_main(settings.DOWNLOAD_DIR_NAME)
+  data = pd.read_csv(file_name)
   return data
 
 def classifier_rules(data):
-  for row in range(len(data)):
-    matcher = PhraseMatcher(nlp.vocab)
-    if(data.loc[row,'Stage_of_Failure'] == 'Run the pre-run hook'):
-      data['Pre_Run_hook'][row] = 1
-      data['Error_Type'][row] = "non DCI"
-      continue
-
-    if(data['Is_user_text.yml'][row] ==1) :
-      data['Error_Type'][row] = "non DCI"
-      continue
-      
-    if(data['Is_SUT.yml'][row]==1):
-      matcher.add("beaker server", None, nlp("'ansible_host': u'beaker_server'"))
-      matcher.add("undefined_variable", None, nlp("undefined variable"))
-      doc = nlp(data['Error_Message'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['SUT_beaker_server'][row] = 1
-        data['Error_Type'][row] = "non DCI"
-        continue
-
-    if(data['Stage_of_Failure'][row] in ('Gathering Facts','Wait system to be installed')):
-      matcher.add("gathering_facts", None, nlp("/distribution/check-install"))
-      data['Error_Message'][row] = data['Error_Message'][row].replace('u\'', '').replace('\'', '')
-      doc = nlp(data['Error_Message'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['Installation_failure'][row] = 1
-        data['Error_Type'][row] = "DCI"
-        continue
-
-    if(data['Stage_of_Failure'][row] =='Get SUT details'):
-      matcher.add("SUT_HTTP_Error", None, nlp("HTTP error"))
-      doc = nlp(data['Error_Message'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['SUT_HTTP_Error'][row] = 1
-        data['Error_Type'][row] = "non DCI"
-        continue
-
-    if(data['Is_logs.yml'][row] ==1) :
-      matcher.add("logs_parsing_error", None, nlp("An error while parsing the output occured"))
-      doc = nlp(data['Error_Message'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['logs_parsing_error'][row] = 1
-        data['Error_Type'][row] = "non DCI"
-        continue
-
-    if(data['Is_install.yml'][row] ==1):
-      matcher.add("install_no_distro_match", None, nlp("distro tree matches"))
-      data['Error_Type'][row] = "DCI"
-      doc = nlp(data['Error_Message'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['install_no_distro_match'][row] = 1
-        data['Error_Type'][row] = "DCI"
-        continue
-
-    else:
-      matcher.add("dci_rhel_cki_failure_step", None, nlp("dci-rhel-cki"))
-      doc = nlp(data['Stage_of_Failure'][row])
-      matches = matcher(doc)
-      if (len(matches) > 0):
-        data['dci_rhel_cki_failure_step'][row] = 1
-        data['Error_Type'][row] = "DCI"
-        
+  index_exists = settings.client.indices.exists(index=settings.INDEX_NAME)
+  
+  if index_exists == False:
+    LOG.exception("No rule to match: Database not found")
+    sys.exit(1)
+  else:
+    try:
+      rules = settings.client.search(index=settings.INDEX_NAME)
+      count = settings.client.count(index=settings.INDEX_NAME)['count']
+      if(count > 0):
+        for job in range(len(data)):
+          if(data.loc[job,'Error_Type']=="None"):
+            for rule in rules['hits']['hits']:
+              if((rule["_source"]['Is_user_text']!=data.loc[job,'Is_user_text.yml'].item())and (rule["_source"]['Is_SUT']!= data.loc[job,'Is_SUT.yml'].item()) and (rule["_source"]['Is_install']!= data.loc[job,'Is_install.yml'].item()) and (rule["_source"]['Is_logs']!=data.loc[job,'Is_logs.yml'].item()) and (rule["_source"]['Is_dci_rhel_cki']!=data.loc[job,'Is_dci_rhel_cki'].item()) ):
+                continue
+              
+              if((rule["_source"]['Stage_of_Failure']!="0") and (rule["_source"]['Stage_of_Failure']!=data.loc[job,'Stage_of_Failure'])):
+                continue
+              
+              if(rule["_source"]['Error_Message'] !="0"):
+                matcher = PhraseMatcher(nlp.vocab)
+                message = rule["_source"]['Error_Message']
+                matcher.add("gathering_facts", None, nlp(mesage))
+                data.loc[job,'Error_Message'] = data.loc[job,'Error_Message'].replace('u\'', '').replace('\'', '')
+                doc = nlp(data.loc[job,'Error_Message'])
+                matches = matcher(doc)
+                if (len(matches) == 0):
+                  continue
+              
+              data.loc[job,'Error_Type'] = rule["_source"]['Error_Type']
+              add_clasification(data.loc[job,'Job_ID'], {"error_type":data.loc[job,'Error_Type']})
+              break
+      else:
+          LOG.exception("No rule to match: Database is empty")
+          sys.exit(1)
+    except Exception as err:
+      LOG.error(traceback.format_exc())
+      sys.exit(1)
+  
   return data
-
