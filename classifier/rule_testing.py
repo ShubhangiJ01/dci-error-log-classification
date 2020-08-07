@@ -48,6 +48,18 @@ def test_new_rule(args):
             else:
                 logging.info('Failure stage not matching')
                 sys.exit(1)
+
+        if(Error_Message !="0"):
+            message = Error_Message
+            matcher.add("temp", None, nlp(message))
+            data['Error_Message'][0] = data['Error_Message'][0].replace('u\'', '').replace('\'', '')
+            doc = nlp(data['Error_Message'][0])
+            matches = matcher(doc)
+            if (len(matches) > 0):
+                print("Doing fine")
+            else:
+                logging.info('Error message not matching')
+                sys.exit(1)
     else:
         logging.info('Incorrect Rule')
         sys.exit(1)
