@@ -25,7 +25,7 @@ def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,I
     index_exists = settings.client.indices.exists(index=settings.INDEX_NAME)
     settings.client.index(index=settings.INDEX_NAME,body=rule)
     settings.client.indices.refresh(index=settings.INDEX_NAME)
-    
+
     if index_exists == False:
         logging.info("Index not created")
         sys.exit(1)

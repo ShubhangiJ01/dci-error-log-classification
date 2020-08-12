@@ -38,7 +38,7 @@ def classifier_rules(data):
         for job in range(len(data)):
           if(data.loc[job,'Error_Type']=="None"):
             for rule in rules['hits']['hits']:
-              if((rule["_source"]['Is_user_text']!=data.loc[job,'Is_user_text.yml'].item())and (rule["_source"]['Is_SUT']!= data.loc[job,'Is_SUT.yml'].item()) and (rule["_source"]['Is_install']!= data.loc[job,'Is_install.yml'].item()) and (rule["_source"]['Is_logs']!=data.loc[job,'Is_logs.yml'].item()) and (rule["_source"]['Is_dci_rhel_cki']!=data.loc[job,'Is_dci_rhel_cki'].item()) ):
+              if((rule["_source"]['Is_user_text']!=data.loc[job,'Is_user_text.yml'].item()) or (rule["_source"]['Is_SUT']!= data.loc[job,'Is_SUT.yml'].item()) or (rule["_source"]['Is_install']!= data.loc[job,'Is_install.yml'].item()) or (rule["_source"]['Is_logs']!=data.loc[job,'Is_logs.yml'].item()) or (rule["_source"]['Is_dci_rhel_cki']!=data.loc[job,'Is_dci_rhel_cki'].item()) ):
                 continue
               
               if((rule["_source"]['Stage_of_Failure']!="0") and (rule["_source"]['Stage_of_Failure']!=data.loc[job,'Stage_of_Failure'])):
@@ -47,7 +47,7 @@ def classifier_rules(data):
               if(rule["_source"]['Error_Message'] !="0"):
                 matcher = PhraseMatcher(nlp.vocab)
                 message = rule["_source"]['Error_Message']
-                matcher.add("gathering_facts", None, nlp(mesage))
+                matcher.add("gathering_facts", None, nlp(message))
                 data.loc[job,'Error_Message'] = data.loc[job,'Error_Message'].replace('u\'', '').replace('\'', '')
                 doc = nlp(data.loc[job,'Error_Message'])
                 matches = matcher(doc)
