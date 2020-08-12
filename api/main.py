@@ -126,14 +126,9 @@ def enhance_job(job, first_jobstate_failure, files):
 
     try:
         job["error_type"] = job["analytics"][0]["data"]["error_type"]
-<<<<<<< HEAD
     except Exception:
         job["error_type"] = None
-=======
-    except KeyError:
-        job["error_type"] = "None"
->>>>>>> eb67479e5d31a6b21009d57b1a699a88ddb91dd8
-
+    
     return job
 
 
@@ -164,15 +159,11 @@ def get_values(job):
     else:
         values.append("0")
     
-<<<<<<< HEAD
     if job["error_type"]:
         values.append(job["error_type"])
     else:
         values.append("None")
         
-=======
-    values.append(job["error_type"])
->>>>>>> eb67479e5d31a6b21009d57b1a699a88ddb91dd8
     return values
 
 def test_data(job_id):
