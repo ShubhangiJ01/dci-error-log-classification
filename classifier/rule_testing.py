@@ -17,15 +17,25 @@ nlp = spacy.load("en_core_web_sm")
 LOG = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.INFO)
 
-def create_new_rule(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_message,Job_ID):
+def test_new_rule(args):
+    
+    Stage_of_Failure = args.Stage_of_Failure
+    Error_Message = args.Error_Message
+    Job_ID = args.Job_ID
+    Is_user_text = args.Is_user_text
+    Is_SUT = args.Is_SUT
+    Is_install = args.Is_install
+    Is_logs = args.Is_logs
+    Is_dci_rhel_cki = args.Is_dci_rhel_cki 
+    
     data = test_data(Job_ID)
     matcher = PhraseMatcher(nlp.vocab)
     
     if((Is_user_text==data.loc[0,'Is_user_text.yml']) and (Is_SUT== data.loc[0,'Is_SUT.yml']) and (Is_install== data.loc[0,'Is_install.yml']) and (Is_logs==data.loc[0,'Is_logs.yml']) and (Is_install== data.loc[0,'Is_install.yml']) and (Is_dci_rhel_cki== data.loc[0,'Is_dci_rhel_cki'])):
         if(Stage_of_Failure!="0"):
-            if(data[0,'Stage_of_Failure'] == Stage_of_Failure):
-                if(Error_message !="0"):
-                    message = Error_message
+            if(data.loc[0,'Stage_of_Failure'] == Stage_of_Failure):
+                if(Error_Message !="0"):
+                    message = Error_Message
                     matcher.add("temp", None, nlp(message))
                     data['Error_Message'][0] = data['Error_Message'][0].replace('u\'', '').replace('\'', '')
                     doc = nlp(data['Error_Message'][0])
@@ -37,6 +47,18 @@ def create_new_rule(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_d
                         sys.exit(1)
             else:
                 logging.info('Failure stage not matching')
+                sys.exit(1)
+
+        if(Error_Message !="0"):
+            message = Error_Message
+            matcher.add("temp", None, nlp(message))
+            data['Error_Message'][0] = data['Error_Message'][0].replace('u\'', '').replace('\'', '')
+            doc = nlp(data['Error_Message'][0])
+            matches = matcher(doc)
+            if (len(matches) > 0):
+                print("Doing fine")
+            else:
+                logging.info('Error message not matching')
                 sys.exit(1)
     else:
         logging.info('Incorrect Rule')

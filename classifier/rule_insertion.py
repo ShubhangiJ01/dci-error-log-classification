@@ -2,66 +2,63 @@ import sys
 import logging
 import argparse
 import traceback
-from elasticsearch import Elasticsearch
-from rule_creation import create_new_rule
-import requests
+import classifier.settings as settings
+from classifier.rule_testing import test_new_rule
+
 
 LOG = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.INFO)
 
-def database_insertion(Stage_of_failure,Col_val,Error_Message,Error_Type):
-    client = Elasticsearch("http://localhost:9200")
-
+def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type):
+    
     rule={
-        "Stage_of_failure": Stage_of_failure,
-        "Column_Val = 1": Col_val,
+        "Stage_of_Failure": Stage_of_Failure,
         "Error_Message": Error_Message,
-        "Error_Type": Error_Type
+        "Error_Type": Error_Type,
+        "Is_user_text": Is_user_text,
+        "Is_SUT": Is_SUT,
+        "Is_install": Is_install,
+        "Is_logs": Is_logs,
+        "Is_dci_rhel_cki" : Is_dci_rhel_cki
     }
 
-    INDEX_NAME = "rule_classification"
-    client.index(index=INDEX_NAME,body=rule)
-    client.indices.refresh(index=INDEX_NAME)
-
-    index_exists = client.indices.exists(index=INDEX_NAME)
+    index_exists = settings.client.indices.exists(index=settings.INDEX_NAME)
+    settings.client.index(index=settings.INDEX_NAME,body=rule)
+    settings.client.indices.refresh(index=settings.INDEX_NAME)
 
     if index_exists == False:
-        print("Index not created")
+        logging.info("Index not created")
         sys.exit(1)
     else:
         try:
-            response = client.search(index=INDEX_NAME)
-            for hit in response['hits']['hits']:
-                print(hit["_source"])
-
+            response = settings.client.search(index=settings.INDEX_NAME)
         except Exception as err:
             print ("search(index) ERROR", err)
-            response = {"error": err}
         
-def main():
+def main(args):
     
-    parser = argparse.ArgumentParser(description='New rule creation')
-    parser.add_argument('Stage_of_failure', type=str, help='Stage_of_failure')
-    parser.add_argument('Column_Val', type=str, help='column value equal to 1')
-    parser.add_argument('Error_Message', type=str, help='Error content')
-    parser.add_argument('Error_Type', type=str, choices=['non DCI','DCI'],help='Error label')
-    parser.add_argument('Job_id', type=str, help='Test job id')
-    args = parser.parse_args()
-    
-    Stage_of_failure = args.Stage_of_failure
-    Column_Val = args.Column_Val
+    Stage_of_Failure = args.Stage_of_Failure
     Error_Message = args.Error_Message
     Error_Type = args.Error_Type
-    Job_id = args.Job_id
+    Job_ID = args.Job_ID
+    Is_user_text = args.Is_user_text
+    Is_SUT = args.Is_SUT
+    Is_install = args.Is_install
+    Is_logs = args.Is_logs
+    Is_dci_rhel_cki = args.Is_dci_rhel_cki 
         
     try:
-        logging.info('Creating new rule')
-        create_new_rule(Stage_of_failure,Column_Val,Error_Message,Job_id)
+        logging.info('Testing new rule')
+        test_new_rule(args)
     except Exception:
         LOG.error(traceback.format_exc())
         sys.exit(1)
-    logging.info('Entering database insertion ')
-    database_insertion(Stage_of_failure,Column_Val,Error_Message,Error_Type)
+    try:
+        logging.info('Entering database insertion')
+        database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
+    except Exception:
+        LOG.error(traceback.format_exc())
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
