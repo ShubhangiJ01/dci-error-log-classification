@@ -18,7 +18,6 @@ from api.csv_manipulations import (
 )
 from api.file_is_in_files import check_if_file_is_in_files
 
-context = build_dci_context()
 
 headers = [
     "Job_link",
@@ -35,24 +34,28 @@ headers = [
 
 
 def get_product_id_by_name(product_name):
+    context = build_dci_context()
     r = dci_product.list(context, where=f"name:{product_name}")
     product_id = r.json()["products"][0]["id"]
     return product_id
 
 
 def get_files_for_jobstate(jobstate_id):
+    context = build_dci_context()
     r = dci_jobstate.get(context, id=jobstate_id, embed="files")
     r.raise_for_status()
     return r.json()["jobstate"]["files"]
 
 
 def get_jobstates_with_files(job_id):
+    context = build_dci_context()
     r = dci_job.list_jobstates(context, id=job_id, embed="files")
     r.raise_for_status()
     return r.json()["jobstates"]
 
 
 def get_failed_jobs_for_product(product_id):
+    context = build_dci_context()
     num_of_jobs = dci_job.list(
         context, where=f"product_id:{product_id},status:failure", limit=1, offset=0
     ).json()["_meta"]["count"]
@@ -73,6 +76,7 @@ def get_failed_jobs_for_product(product_id):
 
 
 def get_content_for_file(file_id):
+    context = build_dci_context()
     r = dci_file.content(context, id=file_id)
     r.raise_for_status()
     return r.text
@@ -167,6 +171,7 @@ def get_values(job):
     return values
 
 def test_data(job_id):
+    context = build_dci_context()
     csv_file_name = create_csv_file_name()
     create_csv_file_with_headers(csv_file_name, headers)
     try:
@@ -188,6 +193,7 @@ def test_data(job_id):
 
 
 def add_clasification(job_id, result):
+    context = build_dci_context()
     print("Updating Label after ML engine run")
     r = dci_analytics.create(
         context,
