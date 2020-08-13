@@ -37,16 +37,16 @@ def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,I
         
 def main(args):
     
-    Stage_of_Failure = args.Stage_of_Failure
-    Error_Message = args.Error_Message
-    Error_Type = args.Error_Type
-    Job_ID = args.Job_ID
-    Is_user_text = args.Is_user_text
-    Is_SUT = args.Is_SUT
-    Is_install = args.Is_install
-    Is_logs = args.Is_logs
-    Is_dci_rhel_cki = args.Is_dci_rhel_cki 
-        
+    Stage_of_Failure = args['Stage_of_Failure']
+    Error_Message = args['Error_Message']
+    Error_Type = args['Error_Type']
+    Job_ID = args['Job_ID']
+    Is_user_text = args['Is_user_text']
+    Is_SUT = args['Is_SUT']
+    Is_install = args['Is_install']
+    Is_logs = args['Is_logs']
+    Is_dci_rhel_cki = args['Is_dci_rhel_cki']
+    
     try:
         logging.info('Testing new rule')
         test_new_rule(args)
@@ -56,6 +56,7 @@ def main(args):
     try:
         logging.info('Entering database insertion')
         database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
+        
     except Exception:
         LOG.error(traceback.format_exc())
         sys.exit(1)
