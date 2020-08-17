@@ -3,15 +3,15 @@ import sys
 import logging
 import traceback
 import os
-from classifier.error_classification_rhel import data_load
+from classifier.error_classification_data_load import data_load
 from classifier.error_classification_rhel import classifier_rules
-from classifier.json_generator import classification_storage
+from api.main import add_clasification
 
 LOG = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.INFO)
 
 def main(args):
-    if(args.product == "rhel"):
+    if(args['product'] == "rhel"):
         try:
             logging.info('Loading data for RHEL')
             data = data_load()
@@ -21,7 +21,9 @@ def main(args):
         
         try:    
             logging.info('Calling classifier')
-            classified_data = classifier_rules(data)
+            for row in range(len(data)):
+                classified_data = classifier_rules(data.loc[row])
+                add_clasification(classified_data.loc['Job_ID'], {"error_type":classified_data.loc['Error_Type']})
         except Exception:
             LOG.error(traceback.format_exc())
             sys.exit(1)

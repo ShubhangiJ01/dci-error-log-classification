@@ -1,6 +1,4 @@
 import json
-import logging
-import traceback
 import sys
 import pandas as pd
 from dciclient.v1.api import analytic as dci_analytics
@@ -20,9 +18,6 @@ from api.csv_manipulations import (
 )
 from api.file_is_in_files import check_if_file_is_in_files
 
-#sys.path.append('../')
-
-context = build_dci_context()
 LOG = logging.getLogger(__name__)
 logging.getLogger().setLevel(logging.INFO)
 
@@ -41,24 +36,28 @@ headers = [
 
 
 def get_product_id_by_name(product_name):
+    context = build_dci_context()
     r = dci_product.list(context, where=f"name:{product_name}")
     product_id = r.json()["products"][0]["id"]
     return product_id
 
 
 def get_files_for_jobstate(jobstate_id):
+    context = build_dci_context()
     r = dci_jobstate.get(context, id=jobstate_id, embed="files")
     r.raise_for_status()
     return r.json()["jobstate"]["files"]
 
 
 def get_jobstates_with_files(job_id):
+    context = build_dci_context()
     r = dci_job.list_jobstates(context, id=job_id, embed="files")
     r.raise_for_status()
     return r.json()["jobstates"]
 
 
 def get_failed_jobs_for_product(product_id):
+    context = build_dci_context()
     num_of_jobs = dci_job.list(
         context, where=f"product_id:{product_id},status:failure", limit=1, offset=0
     ).json()["_meta"]["count"]
@@ -79,12 +78,14 @@ def get_failed_jobs_for_product(product_id):
 
 
 def get_content_for_file(file_id):
+    context = build_dci_context()
     r = dci_file.content(context, id=file_id)
     r.raise_for_status()
     return r.text
 
 
 def change_content_to_wait_system_to_be_installed(job, files_for_jobstate_before_failure):
+    context = build_dci_context()
     for file in files_for_jobstate_before_failure:
         if file['name'] == "Wait system to be installed":
             job["content"] = get_content_for_file(file["id"])
@@ -92,6 +93,7 @@ def change_content_to_wait_system_to_be_installed(job, files_for_jobstate_before
     return None
 
 def enhance_job(job, first_jobstate_failure, files):
+    context = build_dci_context()
     files_sorted = sort_by_created_at(files)
     first_file = files_sorted[0]
     content = get_content_for_file(first_file["id"])
@@ -132,13 +134,14 @@ def enhance_job(job, first_jobstate_failure, files):
 
     try:
         job["error_type"] = job["analytics"][0]["data"]["error_type"]
-    except KeyError:
-        job["error_type"] = "None"
-
+    except Exception:
+        job["error_type"] = None
+    
     return job
 
 
 def get_values(job):
+    context = build_dci_context()
     values = []
     values.append("https://www.distributed-ci.io/jobs/" + job["id"])
     values.append(job["id"])
@@ -165,10 +168,15 @@ def get_values(job):
     else:
         values.append("0")
     
-    values.append(job["error_type"])
+    if job["error_type"]:
+        values.append(job["error_type"])
+    else:
+        values.append("None")
+        
     return values
 
 def test_data(job_id):
+    context = build_dci_context()
     csv_file_name = create_csv_file_name()
     create_csv_file_with_headers(csv_file_name, headers)
     try:
@@ -183,7 +191,6 @@ def test_data(job_id):
         job_values = get_values(job)
         append_job_to_csv(csv_file_name, job_values)
     except Exception:
-        # LOG.error(traceback.format_exc())
         sys.exit(1)
 
     data = pd.read_csv(csv_file_name)
@@ -191,6 +198,7 @@ def test_data(job_id):
 
 
 def add_clasification(job_id, result):
+    context = build_dci_context()
     print("Updating Label after ML engine run")
     r = dci_analytics.create(
         context,
@@ -211,7 +219,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 6 :
+        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 13 :
             continue
 
         if (

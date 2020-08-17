@@ -2,9 +2,6 @@ import codecs
 import os
 import setuptools
 
-#from classifier import version
-
-
 def _get_requirements():
     requirements_path = '%s/%s' % (os.path.dirname(os.path.abspath(__file__)),
                                    'requirements.txt')
@@ -23,10 +20,11 @@ def _get_readme():
 
 setuptools.setup(
     name='dci-error-log-classifier',
+    version='0.0.1',
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     author='Distributed ci team.',
     author_email='distributed-ci@redhat.com',
-    description='Server which manage products deployments',
+    description='Tool to label logs by the error type',
     long_description=_get_readme(),
     install_requires=_get_requirements(),
     license='Apache v2.0',
