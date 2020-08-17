@@ -1,18 +1,18 @@
 import os
 import time
 import argparse
+import logging
 from elasticsearch import Elasticsearch
+
+tracer = logging.getLogger('elasticsearch')
+tracer.setLevel(logging.CRITICAL)
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
-DCI_CLASSIFIER_UPLOAD_PATH = '/home/shujain/Downloads/'
-DCI_CLASSIFIER_DOWNLOAD_PATH = '/home/shujain/Downloads/'
-UPLOAD_DIR_NAME = os.environ.get('DCI_CLASSIFIER_UPLOAD_PATH', '/home/shujain/Downloads/')
 DOWNLOAD_DIR_NAME = os.environ.get('DCI_CLASSIFIER_DOWNLOAD_PATH', '/home/shujain/Downloads/')
 
 client = Elasticsearch("http://localhost:9200")
 INDEX_NAME = "rule_classifications"
-
 
 def parse_argument():
     parser = argparse.ArgumentParser(description='DCI error log classification')
@@ -29,5 +29,4 @@ def parse_argument():
     parser.add_argument('--Is_dci_rhel_cki', type=int,choices=[0,1],default=0, help='Failed task dci-rhel-cki')
 
     args = parser.parse_args()
-        
     return args

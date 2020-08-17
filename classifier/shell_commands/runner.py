@@ -9,4 +9,4 @@ command_function={
 }
 
 def run(args):
-    return command_function[args.task](args)
+    return command_function[args.task](args.__dict__)

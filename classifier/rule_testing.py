@@ -19,14 +19,18 @@ logging.getLogger().setLevel(logging.INFO)
 
 def test_new_rule(args):
     
-    Stage_of_Failure = args.Stage_of_Failure
-    Error_Message = args.Error_Message
-    Job_ID = args.Job_ID
-    Is_user_text = args.Is_user_text
-    Is_SUT = args.Is_SUT
-    Is_install = args.Is_install
-    Is_logs = args.Is_logs
-    Is_dci_rhel_cki = args.Is_dci_rhel_cki 
+    Stage_of_Failure = args['Stage_of_Failure']
+    Error_Message = args['Error_Message']
+    Job_ID = args['Job_ID']
+    Is_user_text = args['Is_user_text']
+    Is_SUT = args['Is_SUT']
+    Is_install = args['Is_install']
+    Is_logs = args['Is_logs']
+    Is_dci_rhel_cki = args['Is_dci_rhel_cki']
+    
+    if(Job_ID == "0"):
+        LOG.exception("No Job id passed to test the rule")
+        sys.exit(1)
     
     data = test_data(Job_ID)
     matcher = PhraseMatcher(nlp.vocab)
@@ -43,10 +47,10 @@ def test_new_rule(args):
                     if (len(matches) > 0):
                         print("Doing fine")
                     else:
-                        logging.info('Error message not matching')
+                        LOG.exception('Error message not matching')
                         sys.exit(1)
             else:
-                logging.info('Failure stage not matching')
+                LOG.exception('Failure stage not matching')
                 sys.exit(1)
 
         if(Error_Message !="0"):
@@ -58,10 +62,10 @@ def test_new_rule(args):
             if (len(matches) > 0):
                 print("Doing fine")
             else:
-                logging.info('Error message not matching')
+                LOG.exception('Error message not matching')
                 sys.exit(1)
     else:
-        logging.info('Incorrect Rule')
+        LOG.exception('Incorrect Rule')
         sys.exit(1)
 
     print("Success")

@@ -1,4 +1,4 @@
-import settings
+import classifier.settings as settings
 import json
 
 
@@ -16,3 +16,5 @@ def classification_storage(data):
     upload_file_name = settings.UPLOAD_DIR_NAME + "Label_Rhel_" + settings.timestr + ".json"
     with open(upload_file_name, 'w') as fp:
         json.dump(data_dic, fp)
+    
+   
