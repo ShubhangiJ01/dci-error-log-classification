@@ -1,0 +1,83 @@
+Job_link,Job_ID,Error_Message,Stage_of_Failure,Is_user_text.yml,Is_SUT.yml,Is_install.yml,Is_logs.yml,Is_dci_rhel_cki,Error_Type
+https://www.distributed-ci.io/jobs/a1d68532-c2cf-4827-8074-a04c4fb63d6d,a1d68532-c2cf-4827-8074-a04c4fb63d6d,"Failed to install some of the specified packages
+",sap-hana-preconfigure : Install IBM Tools,1,0,0,0,0,None
+https://www.distributed-ci.io/jobs/4e00d8b3-ba1d-4aac-a3ec-b855052fc699,4e00d8b3-ba1d-4aac-a3ec-b855052fc699,"The conditional check 'check_pre_run.exists' failed. The error was: error while evaluating conditional (check_pre_run.exists): 'dict object' has no attribute 'exists'
+
+The error appears to be in '/usr/share/dci-rhel-agent/dci-rhel-agent.yml': line 72, column 11, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+          register: check_pre_run
+        - name: Run the pre-run hook
+          ^ here
+
+[{'_ansible_no_log': False,
+  'msg': u""The conditional check 'check_pre_run.exists' failed. The error was: error while evaluating conditional (check_pre_run.exists): 'dict object' has no attribute 'exists'\n\nThe error appears to be in '/usr/share/dci-rhel-agent/dci-rhel-agent.yml': line 72, column 11, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n          register: check_pre_run\n        - name: Run the pre-run hook\n          ^ here\n""}]",Run the pre-run hook,0,0,0,0,0,None
+https://www.distributed-ci.io/jobs/8b3fe96d-de24-47bd-b002-86f803410ba6,8b3fe96d-de24-47bd-b002-86f803410ba6,"Xpath inv:System/inv:supportsArch/inv:Arch/rdfs:label does not reference a node!
+[{'_ansible_delegated_vars': {'ansible_host': u'beaker_server'},
+  '_ansible_no_log': False,
+  'changed': False,
+  u'invocation': {u'module_args': {u'add_children': None,
+                                   u'attribute': None,
+                                   u'backup': False,
+                                   u'content': u'text',
+                                   u'count': False,
+                                   u'input_type': u'yaml',
+                                   u'insertafter': False,
+                                   u'insertbefore': False,
+                                   u'namespaces': {u'inv': u'https://fedorahosted.org/beaker/rdfschema/inventory#',
+                                                   u'rdfs': u'http://www.w3.org/2000/01/rdf-schema#'},
+                                   u'path': None,
+                                   u'pretty_print': False,
+                                   u'print_match': False,
+                                   u'set_children': None,
+                                   u'state': u'present',
+                                   u'strip_cdata_tags': False,
+                                   u'value': None,
+                                   u'xmlstring': u'<?xml version=""1.0"" encoding=""utf-8""?>\n<rdf:RDF\n  xmlns:foaf=""http://xmlns.com/foaf/0.1/""\n  xmlns:inv=""https://fedorahosted.org/beaker/rdfschema/inventory#""\n  xmlns:rdf=""http://www.w3.org/1999/02/22-rdf-syntax-ns#""\n>\n  <inv:System rdf:about=""http://lu0557.wdf.sap.corp/bkr/view/lu0548.wdf.sap.corp#system"">\n    <inv:fqdn>lu0548.wdf.sap.corp</inv:fqdn>\n    <inv:owner>\n      <foaf:User rdf:about=""http://lu0557.wdf.sap.corp/bkr/users/admin#user"">\n        <foaf:mbox rdf:resource=""mailto:root@localhost.localdomain""/>\n        <foaf:name>Admin Nimda</foaf:name>\n      </foaf:User>\n    </inv:owner>\n  </inv:System>\n</rdf:RDF>',
+                                   u'xpath': u'inv:System/inv:supportsArch/inv:Arch/rdfs:label'}},
+  u'msg': u'Xpath inv:System/inv:supportsArch/inv:Arch/rdfs:label does not reference a node!'}]",Parse CPU arch from SUT details (XML),0,1,0,0,0,None
+https://www.distributed-ci.io/jobs/8ab14e70-230a-41db-9750-4aa2263d0e6b,8ab14e70-230a-41db-9750-4aa2263d0e6b,"The task includes an option with an undefined variable. The error was: 'dict object' has no attribute u'RHEL-8-milestone'
+
+The error appears to be in '/usr/share/dci-rhel-agent/sut.yml': line 18, column 3, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+- name: 'Add SUT to the Ansible group'
+  ^ here
+
+",Add SUT to the Ansible group,0,1,0,0,0,None
+https://www.distributed-ci.io/jobs/21ce695a-d222-4f24-811d-a49163d83af3,21ce695a-d222-4f24-811d-a49163d83af3,"non-zero return code
+Stderr:
+One or more tasks failed [restraint-error-quark, 10]
+Stdout:
+Using ./processed_cki_job.01 for job run
+Connecting to http://localhost:8091/run for host: sut-kernelci.novalocal:8081, recipe id:1
+[sut-kernelci.novaloc] T:       1 [LTP                                        ] Running
+[sut-kernelci.novaloc] T:       1 [LTP                                        ] Aborted
+[sut-kernelci.novaloc] 1583884951 [/                                          ] WARN
+[sut-kernelci.novaloc]           Command returned non-zero 512",dci-rhel-cki : Execute restraint processed_cki_job.xml,0,0,0,0,1,None
+https://www.distributed-ci.io/jobs/cdf7bbdb-3ab4-4964-a4f7-2b04e09579e6,cdf7bbdb-3ab4-4964-a4f7-2b04e09579e6,"[{'_ansible_no_log': False,
+  u'changed': True,
+  u'invocation': {u'module_args': {u'job_id': u'J:142',
+                                   u'task': u'/distribution/check-install'}},
+  u'status': u'Aborted'}]",Gathering Facts,0,0,1,0,0,None
+https://www.distributed-ci.io/jobs/872c13fd-b534-4bc3-819e-95e387a98627,872c13fd-b534-4bc3-819e-95e387a98627,"non-zero return code
+Stderr:
+Exception: <Fault 1: '<class \'bkr.common.bexceptions.BX\'>:No distro tree matches Recipe: <distroRequires>\n                <and>\n                    <distro_name op=""="" value=""RHEL-8.2.0-20200325.n.0""/>\n                    <distro_arch op=""="" value=""x86_64""/>\n                </and>\n            </distroRequires>\n                                '>
+Stdout:
+Submitted: []",Launch Beaker install,0,0,1,0,0,None
+https://www.distributed-ci.io/jobs/12afe973-cbfd-47e9-9b63-c66565a547b5,12afe973-cbfd-47e9-9b63-c66565a547b5,"non-zero return code
+Stderr:
+HTTP error: 404 Client Error: NOT FOUND
+Stdout:
+",Get SUT details,0,1,0,0,0,None
+https://www.distributed-ci.io/jobs/f67c1194-8cbb-4363-ad71-cd29db9e25d8,f67c1194-8cbb-4363-ad71-cd29db9e25d8,"An error while parsing the output occured, please reach to distributed-ci@redhat.com: 'invocation'",Upload logs directory to DCI Control Server,0,0,0,1,0,None
+https://www.distributed-ci.io/jobs/a8f14881-3b6f-4831-becc-e82c94bbd6ba,a8f14881-3b6f-4831-becc-e82c94bbd6ba,"non-zero return code
+Stderr:
+Exception: <Fault 1: '<class \'bkr.common.bexceptions.BX\'>:No distro tree matches Recipe: <distroRequires>\n                <and>\n                    <distro_name op=""="" value=""RHEL-7.6-20190926.n.0""/>\n                </and>\n            </distroRequires>\n                                '>
+Stdout:
+Submitted: []",Launch Beaker install,0,0,1,0,0,None

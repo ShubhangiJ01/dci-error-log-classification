@@ -18,6 +18,8 @@ from api.csv_manipulations import (
 )
 from api.file_is_in_files import check_if_file_is_in_files
 
+LOG = logging.getLogger(__name__)
+logging.getLogger().setLevel(logging.INFO)
 
 headers = [
     "Job_link",
@@ -83,6 +85,7 @@ def get_content_for_file(file_id):
 
 
 def change_content_to_wait_system_to_be_installed(job, files_for_jobstate_before_failure):
+    context = build_dci_context()
     for file in files_for_jobstate_before_failure:
         if file['name'] == "Wait system to be installed":
             job["content"] = get_content_for_file(file["id"])
@@ -90,6 +93,7 @@ def change_content_to_wait_system_to_be_installed(job, files_for_jobstate_before
     return None
 
 def enhance_job(job, first_jobstate_failure, files):
+    context = build_dci_context()
     files_sorted = sort_by_created_at(files)
     first_file = files_sorted[0]
     content = get_content_for_file(first_file["id"])
@@ -137,6 +141,7 @@ def enhance_job(job, first_jobstate_failure, files):
 
 
 def get_values(job):
+    context = build_dci_context()
     values = []
     values.append("https://www.distributed-ci.io/jobs/" + job["id"])
     values.append(job["id"])
@@ -214,7 +219,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 6 :
+        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 13 :
             continue
 
         if (
