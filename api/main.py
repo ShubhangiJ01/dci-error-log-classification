@@ -1,5 +1,6 @@
 import json
 import sys
+import logging
 import pandas as pd
 from dciclient.v1.api import analytic as dci_analytics
 from dciclient.v1.api.context import build_dci_context
@@ -191,10 +192,10 @@ def test_data(job_id):
         job_values = get_values(job)
         append_job_to_csv(csv_file_name, job_values)
     except Exception:
-        sys.exit(1)
+        return 0,False
 
     data = pd.read_csv(csv_file_name)
-    return data
+    return data,True
 
 
 def add_clasification(job_id, result):
@@ -219,7 +220,7 @@ def api_main(file_path):
 
     for job in jobs:
         created_at = datetime.strptime(job["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 13 :
+        if created_at.year < 2020 or created_at.month < 8 or created_at.day < 18 :
             continue
 
         if (

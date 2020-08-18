@@ -1,5 +1,4 @@
 import json
-import sys
 import logging
 import traceback
 import flask
@@ -13,13 +12,8 @@ from classifier.rule_testing import test_new_rule
 
 app = Flask(__name__)
 
-@app.route('/rules', methods=['GET'])
-def show_all_rules():
-    rules = all_rules()
-    return flask.Response(json.dumps(rules), 200, content_type='application/json')
-
 def arguments():
-    
+
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('Error_Type', type=str, default="None",choices=['non DCI','DCI'],help='Error label')
     parser.add_argument('Job_ID', type=str, default="0")
@@ -34,27 +28,43 @@ def arguments():
     arg = parser.parse_args()
     return arg
 
+@app.route('/rules', methods=['GET'])
+def show_all_rules():
+    rules,flag = all_rules()
+    
+    if(flag == False):
+        return flask.Response(json.dumps(rules), 400, content_type='application/json')
+    else:
+        return flask.Response(json.dumps(rules), 200, content_type='application/json')
+
+
 @app.route('/rules', methods=['POST'])
 def create_new_rule():
     args = arguments()
     try:
-        main(args)
+        response,flag=main(args)
         res = flask.request.json
-        return {'message': "Rule created Succesfully"}
+        if(flag == False):
+            return flask.Response(json.dumps(response), 400, content_type='application/json')  
+        else:
+            return flask.Response(json.dumps(res), 201, content_type='application/json')
         
     except Exception as err:
-        return flask.Response(Response.json, 400, content_type='application/json')
+        return flask.Response({"message": "Rule creation failed"}, 400, content_type='application/json')
 
-@app.route('/test_rules', methods=['POST'])
+@app.route('/rules/test', methods=['POST'])
 def test_rule():
     args = arguments()
     try:
-        test_new_rule(args)
-        res = flask.request.json
-        return {'message': "Successs"}
+        response,flag = test_new_rule(args)
+        if (flag == False):
+            return flask.Response(json.dumps(response), 400, content_type='application/json')
+        else:
+            res = flask.request.json
+            return flask.Response(json.dumps(res),200)
         
     except Exception as err:
-        return flask.Response(Response.json, 400, content_type='application/json')
+        return flask.Response({"message":,"Rule testing failed"}, 400, content_type='application/json')
     
 
 if __name__ == '__main__':

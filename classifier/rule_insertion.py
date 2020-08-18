@@ -28,12 +28,13 @@ def database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,I
 
     if index_exists == False:
         logging.info("Index not created")
-        sys.exit(1)
+        return ({"ERROR":"Index not created"},False)
     else:
         try:
             response = settings.client.search(index=settings.INDEX_NAME)
+            return({"Status":"Rule inserted successfully"},True)
         except Exception as err:
-            print ("search(index) ERROR", err)
+            return ({"search(index) ERROR", err},False)
         
 def main(args):
     
@@ -49,17 +50,19 @@ def main(args):
     
     try:
         logging.info('Testing new rule')
-        test_new_rule(args)
+        response,flag = test_new_rule(args)
+        if(flag == False):
+            return(response,False)
     except Exception:
-        LOG.error(traceback.format_exc())
-        sys.exit(1)
+        return({"EXCEPTION":LOG.error(traceback.format_exc())},False)
+        
     try:
         logging.info('Entering database insertion')
-        database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
-        
-    except Exception:
-        LOG.error(traceback.format_exc())
-        sys.exit(1)
+        response,flag = database_insertion(Stage_of_Failure,Is_user_text,Is_SUT,Is_install,Is_logs,Is_dci_rhel_cki,Error_Message,Error_Type)
+        return(response,flag)
 
+    except Exception:
+        return({"EXCEPTION":LOG.error(traceback.format_exc())},False)
+        
 if __name__ == "__main__":
     main()
