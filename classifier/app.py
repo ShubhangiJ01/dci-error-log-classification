@@ -64,7 +64,7 @@ def test_rule():
             return flask.Response(json.dumps(res),200)
         
     except Exception as err:
-        return flask.Response({"message":,"Rule testing failed"}, 400, content_type='application/json')
+        return flask.Response({"message":"Rule testing failed"}, 400, content_type='application/json')
     
 
 if __name__ == '__main__':
