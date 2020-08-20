@@ -8,3 +8,4 @@ In the current setup when a job fails we don’t know if it failed because of DC
 
 To save time, we build an error log classification model using machine learning and NLP techniques . This model reads the job data and automatically classifies the failed log into DCI or non DCI. Once the job is classified, RH resources have to invest time only for jobs which are marked as DCI error type and all other jobs are redirected to corresponding partners.
 
+![Alt text](DCI_Classifier_Model.png?raw=true "Title")
