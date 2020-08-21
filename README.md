@@ -47,7 +47,7 @@ If you see your remoteci in the list, everything is working great so far.
 
 ## Classifier
 
-The classifier is built using a rule based system in NLP. Rules are stored in the elasticsearch database. Below is the pipeline for the model development. 
+The classifier is built using a rule based system in NLP. Rules are stored in the elasticsearch database. Below is the pipeline for the model development.  
 <img src="DCI_Classifier_Model.png" width="950" height="400">
 
 To run the classifier: 
