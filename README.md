@@ -101,5 +101,5 @@ Parameters should be corresponding to the job id passed for testing the rule.
 Entry point for the getting list of all rules present in database is app.py @app.route('/rules', methods=['GET'])  
 Command to search the rule : 
 ```console
-http GET  http://0.0.0.0:1234/rules
+http GET http://0.0.0.0:1234/rules
 ```
