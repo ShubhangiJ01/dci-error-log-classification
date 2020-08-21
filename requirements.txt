@@ -4,3 +4,4 @@ dciclient==1.0.4
 nltk==3.5
 pandas==1.0.5
 elasticsearch>=7.0.0,<8.0.0
+flask_restful==0.3.8
