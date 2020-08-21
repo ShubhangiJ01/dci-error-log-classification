@@ -55,7 +55,7 @@ To run the classifier:
 $ dci-classifier job-labelling --product="<product_name>"
 ```
 
-## Rules table Schema:
+## Rule table schema:
 
 'Error_Type', type=str, default="None",choices=['non DCI','DCI'],help='Error label'  
 'Job_ID', type=str, default="0", help='Test job id'  
@@ -67,7 +67,7 @@ $ dci-classifier job-labelling --product="<product_name>"
 'Is_logs', type=int,choices=[0,1],default=0, help='logs.yml in failed bucket'  
 'Is_dci_rhel_cki', type=int,choices=[0,1],default=0, help='Failed task dci-rhel-cki'  
 
-## New Rule creation
+## New rule creation
 
 Flask API is created to create new rule. Entry point for the new rule creation is app.py @app.route('/rules', methods=['POST'])  
 To create new rule, run the API : 
