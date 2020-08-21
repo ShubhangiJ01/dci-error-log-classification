@@ -103,3 +103,5 @@ Command to search the rule :
 ```console
 http GET http://0.0.0.0:1234/rules
 ```
+## License  
+Apache 2.0
