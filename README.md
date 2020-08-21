@@ -8,10 +8,10 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Classifier](#classifier)
-- [Rules table Schema](#rulestableschema)
-- [New Rule creation](#newrulecreation)
-- [Testing new rule](#testingnewrule)
-- [Search existing rules](#searchexistingrules)
+- [Rules table Schema](#rules-table-schema)
+- [New Rule creation](#new-rule-creation)
+- [Testing new rule](#testing-new-rule)
+- [Search existing rules](#search-existing-rules)
 
 # Objective
 
