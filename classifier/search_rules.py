@@ -1,6 +1,5 @@
 import classifier.settings as settings
 import logging
-import sys
 import traceback
 import json
 from elasticsearch import Elasticsearch
@@ -10,8 +9,9 @@ LOG = logging.getLogger(__name__)
 
 def all_rules():
     if index_exists == False:
-        LOG.exception("No rule to match: Database not found")
-        sys.exit(1)
+        LOG.exception("Database not found")
+        return ({"ERROR":"Database not found"},False)
+        
     else:
         try:
             rules = settings.client.search(index=settings.INDEX_NAME)
@@ -26,13 +26,13 @@ def all_rules():
                 
                 for i, b in enumerate(output):
                     dictionary[f"rule_{i}"] = b
-                
+                return dictionary, True
             else:
                 LOG.exception("No rule found: Database is empty")
-                sys.exit(1)
-        except Exception as err:
-            LOG.error(traceback.format_exc())
-            sys.exit(1)
+                return({"ERROR":"No rule found: Database is empty"},False)
 
+        except Exception as err:
+            return({"EXCEPTION":LOG.error(traceback.format_exc())},False)
+            
 if __name__ == '__main__':
     all_rules()

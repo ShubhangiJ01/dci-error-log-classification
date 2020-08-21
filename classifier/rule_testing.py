@@ -30,9 +30,13 @@ def test_new_rule(args):
     
     if(Job_ID == "0"):
         LOG.exception("No Job id passed to test the rule")
-        sys.exit(1)
+        return ({"ERROR":"No Job id passed to test the rule"},False)
     
-    data = test_data(Job_ID)
+    data,flag = test_data(Job_ID)
+
+    if(flag == False):
+        return ({"ERROR":"Error occured while fetching data from dci control server"},False)
+    
     matcher = PhraseMatcher(nlp.vocab)
     
     if((Is_user_text==data.loc[0,'Is_user_text.yml']) and (Is_SUT== data.loc[0,'Is_SUT.yml']) and (Is_install== data.loc[0,'Is_install.yml']) and (Is_logs==data.loc[0,'Is_logs.yml']) and (Is_install== data.loc[0,'Is_install.yml']) and (Is_dci_rhel_cki== data.loc[0,'Is_dci_rhel_cki'])):
@@ -48,10 +52,10 @@ def test_new_rule(args):
                         print("Doing fine")
                     else:
                         LOG.exception('Error message not matching')
-                        sys.exit(1)
+                        return ({"ERROR":"Error message not matching"},False)
             else:
                 LOG.exception('Failure stage not matching')
-                sys.exit(1)
+                return ({"ERROR":"Failure stage not matching"},False)
 
         if(Error_Message !="0"):
             message = Error_Message
@@ -63,9 +67,9 @@ def test_new_rule(args):
                 print("Doing fine")
             else:
                 LOG.exception('Error message not matching')
-                sys.exit(1)
+                return ({"ERROR":"Error message not matching"},False)
     else:
         LOG.exception('Incorrect Rule')
-        sys.exit(1)
+        return({"ERROR":"Incorrect Rule"},False)
 
-    print("Success")
+    return({"Status":"Success"},True)
