@@ -1,6 +1,6 @@
 # Distributed CI Error Classifier
 
-![](https://img.shields.io/badge/license-Apache2.0-blue.svg?style=flat) ![](https://img.shields.io/badge/python-2.7,3.5-green.svg?style=flat)
+![](https://img.shields.io/badge/license-Apache2.0-blue.svg?style=flat) ![](https://img.shields.io/badge/python-2.7,3.5-green.svg?style=flat) ![](https://img.shields.io/badge/elasticsearch-7.8.0-red.svg?style=flat) ![](https://img.shields.io/badge/Flask-1.1.2-orange.svg?style=flat)
 
 # Objective
 
@@ -12,6 +12,8 @@ To save time, we build an error log classification model using machine learning 
 
 The classifier is built using a rule based system in NLP. Rules are stored in the elasticsearch database. Below is the pipeline for the model development. 
 <img src="DCI_Classifier_Model.png" width="950" height="400">
+
+To run the classifier: dci-classifier job-labelling --product="<product_name>"
 
 ## Rules table Schema:
 
@@ -29,10 +31,10 @@ The classifier is built using a rule based system in NLP. Rules are stored in th
 
 Flask API is created to create new rule. Entry point for the new rule creation is app.py @app.route('/rules', methods=['POST'])  
 To create new rule, run the API : http POST http://0.0.0.0:1234/rules <parameter_1="value>-----<parameter_n="value">  
-Sample for parameters in above command: 
-Stage_of_Failure = "Run the pre-run hook" 
-Error_Type = "non DCI" 
-Is_SUT = "1"
+Sample for parameters in above command:  
+Stage_of_Failure = "Run the pre-run hook"   
+Error_Type = "non DCI"   
+Is_SUT = "1"  
 
 ## Testing new rule
 
