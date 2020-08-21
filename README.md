@@ -50,7 +50,10 @@ If you see your remoteci in the list, everything is working great so far.
 The classifier is built using a rule based system in NLP. Rules are stored in the elasticsearch database. Below is the pipeline for the model development. 
 <img src="DCI_Classifier_Model.png" width="950" height="400">
 
-To run the classifier: dci-classifier job-labelling --product="<product_name>"
+To run the classifier: 
+```console
+$ dci-classifier job-labelling --product="<product_name>"
+```
 
 ## Rules table Schema:
 
@@ -67,7 +70,14 @@ To run the classifier: dci-classifier job-labelling --product="<product_name>"
 ## New Rule creation
 
 Flask API is created to create new rule. Entry point for the new rule creation is app.py @app.route('/rules', methods=['POST'])  
-To create new rule, run the API : http POST http://0.0.0.0:1234/rules <parameter_1="value>-----<parameter_n="value">  
+To create new rule, run the API : 
+```console
+http POST http://0.0.0.0:1234/rules <parameter_1="value>-----<parameter_n="value">  
+```
+New rule can be created using CLI as well :  
+```console
+dci-classifier rule-insertion <parameter_1="value>-----<parameter_n="value">  
+```  
 Sample for parameters in above command:  
 Stage_of_Failure = "Run the pre-run hook"   
 Error_Type = "non DCI"   
@@ -76,10 +86,20 @@ Is_SUT = "1"
 ## Testing new rule
 
 Entry point for the rule testing is app.py @app.route('/rules/test', methods=['POST'])  
-Command to test the rule : http POST http://0.0.0.0:1234/rules/test <parameter_1="value>-----<parameter_n="value">  
+Command to test the rule : 
+```console
+http POST http://0.0.0.0:1234/rules/test <parameter_1="value>-----<parameter_n="value">  
+```  
+Through CLI :
+```console
+dci-classifier rule-testing <parameter_1="value>-----<parameter_n="value">  
+```  
 Parameters should be corresponding to the job id passed for testing the rule. 
 
 ## Search existing rules
 
 Entry point for the getting list of all rules present in database is app.py @app.route('/rules', methods=['GET'])  
-Command to search the rule : http GET  http://0.0.0.0:1234/rules
+Command to search the rule : 
+```console
+http GET  http://0.0.0.0:1234/rules
+```
