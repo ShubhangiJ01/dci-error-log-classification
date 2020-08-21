@@ -8,6 +8,7 @@ from elasticsearch import Elasticsearch
 import sys
 import logging
 import traceback
+sys.path.append('../')
 import classifier.settings as settings
 
 pd.set_option('mode.chained_assignment', None)

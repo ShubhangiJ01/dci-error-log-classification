@@ -2,6 +2,8 @@ import sys
 import logging
 import argparse
 import traceback
+
+sys.path.append('../')
 import classifier.settings as settings
 from classifier.rule_testing import test_new_rule
 

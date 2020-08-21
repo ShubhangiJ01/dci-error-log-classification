@@ -1,4 +1,5 @@
 import pandas as pd
+sys.path.append('../')
 from api.main import api_main
 import classifier.settings as settings
 

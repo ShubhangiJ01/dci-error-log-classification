@@ -3,10 +3,12 @@ import logging
 import traceback
 import flask
 from flask import Flask
-from classifier.search_rules import all_rules
 from flask import request
 import argparse
 from flask_restful import reqparse
+
+sys.path.append('../')
+from classifier.search_rules import all_rules
 from classifier.rule_insertion import main
 from classifier.rule_testing import test_new_rule
 

@@ -3,6 +3,8 @@ import sys
 import logging
 import traceback
 import os
+
+sys.path.append('../')
 from classifier.error_classification_data_load import data_load
 from classifier.error_classification_rhel import classifier_rules
 from api.main import add_clasification

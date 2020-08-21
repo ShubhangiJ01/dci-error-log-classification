@@ -3,6 +3,8 @@ import sys
 import logging
 import traceback
 import os
+
+sys.path.append('../')
 from classifier.shell_commands.runner import run
 from classifier.settings import parse_argument
 

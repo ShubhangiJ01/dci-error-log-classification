@@ -1,8 +1,10 @@
-import classifier.settings as settings
 import logging
 import traceback
 import json
 from elasticsearch import Elasticsearch
+
+sys.path.append('../')
+import classifier.settings as settings
 
 index_exists = settings.client.indices.exists(index=settings.INDEX_NAME)
 LOG = logging.getLogger(__name__)
