@@ -14,6 +14,11 @@ DOWNLOAD_DIR_NAME = os.environ.get('DCI_CLASSIFIER_DOWNLOAD_PATH', '/home/shujai
 client = Elasticsearch("http://localhost:9200")
 INDEX_NAME = "rule_classifications"
 
+index_exists = client.indices.exists(index=INDEX_NAME)
+    
+if index_exists == False:
+    client.indices.create(index=INDEX_NAME)
+    
 def parse_argument():
     parser = argparse.ArgumentParser(description='DCI error log classification')
     parser.add_argument('task',type=str,choices=['rule-insertion','rule-testing','job-labelling'])
